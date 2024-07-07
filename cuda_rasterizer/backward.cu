@@ -697,6 +697,5 @@ void BACKWARD::render(
 		dL_dopacity,
 		dL_dcolors,
 		dL_dlanguage_feature,
-		include_feature
-		);
+		include_feature);
 }
