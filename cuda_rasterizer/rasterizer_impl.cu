@@ -341,6 +341,7 @@ int CudaRasterizer::Rasterizer::forward(
 		out_color,
 		geomState.depths,
 		out_depth,
+		out_language_feature,
 		include_feature);
 
 	return num_rendered;
