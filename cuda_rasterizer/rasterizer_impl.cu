@@ -326,7 +326,7 @@ int CudaRasterizer::Rasterizer::forward(
 	const float* feature_ptr = colors_precomp != nullptr ? colors_precomp : geomState.rgb;
 	const float* language_feature_ptr = language_feature_precomp;
 
-	CHECK_CUDA(FORWARD::render(
+	FORWARD::render(
 		tile_grid, block,
 		imgState.ranges,
 		binningState.point_list,
@@ -341,7 +341,7 @@ int CudaRasterizer::Rasterizer::forward(
 		out_color,
 		geomState.depths,
 		out_depth,
-		include_feature), debug)
+		include_feature);
 
 	return num_rendered;
 }
@@ -402,7 +402,7 @@ void CudaRasterizer::Rasterizer::backward(
 	// If we were given precomputed colors and not SHs, use them.
 	const float* color_ptr = (colors_precomp != nullptr) ? colors_precomp : geomState.rgb;
 	const float* language_feature_ptr = language_feature_precomp;
-	CHECK_CUDA(BACKWARD::render(
+	BACKWARD::render(
 		tile_grid,
 		block,
 		imgState.ranges,
@@ -421,7 +421,7 @@ void CudaRasterizer::Rasterizer::backward(
 		dL_dopacity,
 		dL_dcolor,
 		dL_dlanguage_feature,
-		include_feature), debug)
+		include_feature);
 
 	// Take care of the rest of preprocessing. Was the precomputed covariance
 	// given to us or a scales/rot pair? If precomputed, pass that. If not,
