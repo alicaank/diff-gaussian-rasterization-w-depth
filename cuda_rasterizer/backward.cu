@@ -690,6 +690,7 @@ void BACKWARD::render(
 		final_Ts,
 		n_contrib,
 		dL_dpixels,
+		dL_dpixels_F,
 		dL_dmean2D,
 		dL_dconic2D,
 		dL_dopacity,
