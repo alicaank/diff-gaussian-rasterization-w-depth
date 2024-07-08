@@ -12,7 +12,7 @@
 from typing import NamedTuple
 import torch.nn as nn
 import torch
-from . import _C
+import diff_gaussian_rasterization
 
 def rasterize_gaussians(
     means3D,
