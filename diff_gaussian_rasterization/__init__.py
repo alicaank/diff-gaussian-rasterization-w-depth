@@ -26,6 +26,8 @@ def rasterize_gaussians(
     cov3Ds_precomp,
     raster_settings,
 ):
+    print("rasterize_gaussians")
+    print(language_feature_precomp)
     return _RasterizeGaussians.apply(
         means3D,
         means2D,
@@ -56,6 +58,8 @@ class _RasterizeGaussians(torch.autograd.Function):
     ):
         print("Language inside")
         print(language_feature_precomp)
+        print("Colors inside")
+        print(colors_precomp)
         # Restructure arguments the way that the C++ lib expects them
         args = (
             raster_settings.bg, 
