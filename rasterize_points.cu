@@ -23,7 +23,6 @@
 #include <fstream>
 #include <string>
 #include <functional>
-#include <type_traits>
 
 std::function<char*(size_t N)> resizeFunctional(torch::Tensor& t) {
     auto lambda = [&t](size_t N) {
@@ -124,14 +123,6 @@ RasterizeGaussiansCUDA(
 		radii.contiguous().data<int>(),
 		include_feature);
   }
-      // Assuming the variables dL_dmeans2D, dL_dcolors, dL_dlanguage_feature, etc. are defined and initialized
-    auto my_tuple = std::make_tuple(dL_dmeans2D, dL_dcolors, dL_dlanguage_feature, dL_dopacity, dL_dmeans3D, dL_dcov3D, dL_dsh, dL_dscales, dL_drotations);
-
-    // Print the length of the tuple
-    auto length =  std::tuple_size<decltype(my_tuple)>::value;
-	printf("Tuple length\n");
-	printf(length);
-
   return std::make_tuple(rendered, out_color, out_language_feature, radii, geomBuffer, binningBuffer, imgBuffer, out_depth);
 }
 
@@ -224,8 +215,12 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 	  dL_drotations.contiguous().data<float>(),
 	  include_feature);
   }
+    auto my_tuple = std::make_tuple(dL_dmeans2D, dL_dcolors, dL_dlanguage_feature, dL_dopacity, dL_dmeans3D, dL_dcov3D, dL_dsh, dL_dscales, dL_drotations);
 
-
+    // Print the length of the tuple
+    auto length =  std::tuple_size<decltype(my_tuple)>::value;
+	printf("Tuple length\n");
+	printf(length);
   return std::make_tuple(dL_dmeans2D, dL_dcolors, dL_dlanguage_feature, dL_dopacity, dL_dmeans3D, dL_dcov3D, dL_dsh, dL_dscales, dL_drotations);
 }
 
