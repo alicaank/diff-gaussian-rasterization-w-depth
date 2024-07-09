@@ -165,6 +165,7 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
   torch::Tensor dL_dmeans3D = torch::zeros({P, 3}, means3D.options());
   torch::Tensor dL_dmeans2D = torch::zeros({P, 3}, means3D.options());
   torch::Tensor dL_dcolors = torch::zeros({P, NUM_CHANNELS}, means3D.options());
+
   torch::Tensor dL_dlanguage_feature;
   if (include_feature) {
 	dL_dlanguage_feature = torch::zeros({P, NUM_CHANNELS_language_feature}, means3D.options());
@@ -172,6 +173,7 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
   } else {
 	dL_dlanguage_feature = torch::zeros({1}, means3D.options());
   }
+  
   torch::Tensor dL_dconic = torch::zeros({P, 2, 2}, means3D.options());
   torch::Tensor dL_dopacity = torch::zeros({P, 1}, means3D.options());
   torch::Tensor dL_dcov3D = torch::zeros({P, 6}, means3D.options());
@@ -215,14 +217,10 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 	  dL_drotations.contiguous().data<float>(),
 	  include_feature);
   }
-    auto my_tuple = std::make_tuple(dL_dmeans2D, dL_dcolors, dL_dlanguage_feature, dL_dopacity, dL_dmeans3D, dL_dcov3D, dL_dsh, dL_dscales, dL_drotations);
 
-    // Print the length of the tuple
-    auto length =  std::tuple_size<decltype(my_tuple)>::value;
-	printf("Tuple length\n");
-	printf(length);
   return std::make_tuple(dL_dmeans2D, dL_dcolors, dL_dlanguage_feature, dL_dopacity, dL_dmeans3D, dL_dcov3D, dL_dsh, dL_dscales, dL_drotations);
 }
+
 
 torch::Tensor markVisible(
 		torch::Tensor& means3D,
