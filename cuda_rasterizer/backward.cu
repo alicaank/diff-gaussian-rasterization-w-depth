@@ -441,6 +441,7 @@ renderCUDA(
 	__shared__ float collected_colors[C * BLOCK_SIZE];
 	__shared__ float collected_feature[F * BLOCK_SIZE];
 
+
 	// In the forward, we stored the final value for T, the
 	// product of all (1 - alpha) factors. 
 	const float T_final = inside ? final_Ts[pix_id] : 0;
@@ -460,7 +461,6 @@ renderCUDA(
 	float last_alpha = 0;
 	float last_color[C] = { 0 };
 
-	
 	float accum_rec_F[F] = {0};
 	float dL_dpixel_F[F] = {0};
 	float last_language_feature[F] = {0};
@@ -470,7 +470,7 @@ renderCUDA(
 			for (int i = 0; i < F; i++)
 				dL_dpixel_F[i] = dL_dpixels_F[i * H * W + pix_id];
 	}
-
+	
 	// Gradient of pixel coordinate w.r.t. normalized 
 	// screen-space viewport corrdinates (-1 to 1)
 	const float ddelx_dx = 0.5 * W;
@@ -491,10 +491,8 @@ renderCUDA(
 			collected_conic_opacity[block.thread_rank()] = conic_opacity[coll_id];
 			for (int i = 0; i < C; i++)
 				collected_colors[i * BLOCK_SIZE + block.thread_rank()] = colors[coll_id * C + i];
-			if (include_feature) {
-				for (int i = 0; i < F; i++)
-					collected_feature[i * BLOCK_SIZE + block.thread_rank()] = language_feature[coll_id * F + i];
-			}
+			for (int i = 0; i < F; i++)
+				collected_feature[i * BLOCK_SIZE + block.thread_rank()] = language_feature[coll_id * F + i];
 		}
 		block.sync();
 
@@ -542,6 +540,7 @@ renderCUDA(
 				// many that were affected by this Gaussian.
 				atomicAdd(&(dL_dcolors[global_id * C + ch]), dchannel_dcolor * dL_dchannel);
 			}
+
 			if (include_feature) {
 				for (int ch = 0; ch < F; ch++)
 				{
