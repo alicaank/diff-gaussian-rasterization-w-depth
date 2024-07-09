@@ -13,6 +13,9 @@ from typing import NamedTuple
 import torch.nn as nn
 import torch
 from . import _C
+def cpu_deep_copy_tuple(input_tuple):
+    copied_tensors = [item.cpu().clone() if isinstance(item, torch.Tensor) else item for item in input_tuple]
+    return tuple(copied_tensors)
 
 def rasterize_gaussians(
     means3D,
@@ -121,7 +124,15 @@ class _RasterizeGaussians(torch.autograd.Function):
                 imgBuffer,
                 raster_settings.include_feature)
         # Compute gradients for relevant tensors by invoking backward method
-        grad_means2D, grad_colors_precomp, grad_language_feature_precomp, grad_opacities, grad_means3D, grad_cov3Ds_precomp, grad_sh, grad_scales, grad_rotations = _C.rasterize_gaussians_backward(*args)        
+        cpu_args = cpu_deep_copy_tuple(args) # Copy them before they can be corrupted
+        try:
+            grad_means2D, grad_colors_precomp, grad_language_feature_precomp, grad_opacities, grad_means3D, grad_cov3Ds_precomp, grad_sh, grad_scales, grad_rotations = _C.rasterize_gaussians_backward(*args)
+        except Exception as ex:
+            torch.save(cpu_args, "snapshot_bw.dump")
+            print("\nAn error occured in backward. Writing snapshot_bw.dump for debugging.\n")
+            raise ex
+
+        # grad_means2D, grad_colors_precomp, grad_language_feature_precomp, grad_opacities, grad_means3D, grad_cov3Ds_precomp, grad_sh, grad_scales, grad_rotations = _C.rasterize_gaussians_backward(*args)
 
         grads = (
             grad_means3D,
