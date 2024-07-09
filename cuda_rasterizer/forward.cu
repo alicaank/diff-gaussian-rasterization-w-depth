@@ -366,11 +366,11 @@ renderCUDA(
 			
 			if (include_feature)
 			{
-				printf("Inside Forward Function include feature")
+				printf("Inside Forward Function include feature");
 				for (int ch = 0; ch < CHANNELS_language_feature; ch++)
 					F[ch] += language_feature[collected_id[j] * CHANNELS_language_feature + ch] * alpha * T;
 			}
-			printf("Inside Forward Function after  F")
+			printf("Inside Forward Function after  F");
             // Mean depth:
 //             float dep = collected_depth[j];
 //             D += dep * alpha * T;

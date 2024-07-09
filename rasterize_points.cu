@@ -69,13 +69,13 @@ RasterizeGaussiansCUDA(
   torch::Tensor out_color = torch::full({NUM_CHANNELS, H, W}, 0.0, float_opts);
   torch::Tensor out_language_feature;
   if (include_feature) {
-	printf("Forward Function include feature")
+	printf("Forward Function include feature");
 	out_language_feature = torch::full({NUM_CHANNELS_language_feature, H, W}, 0.0, float_opts);
   }
   else {
 	out_language_feature = torch::full({1}, 0.0, float_opts);
   }
-  printf("Forward Function included feature")
+  printf("Forward Function included feature");
   torch::Tensor radii = torch::full({P}, 0, means3D.options().dtype(torch::kInt32));
   torch::Tensor out_depth = torch::full({1, H, W}, 0.0, float_opts);
   
