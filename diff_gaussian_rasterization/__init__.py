@@ -54,7 +54,8 @@ class _RasterizeGaussians(torch.autograd.Function):
         cov3Ds_precomp,
         raster_settings,
     ):
-
+        print("Language inside")
+        print(language_feature_precomp)
         # Restructure arguments the way that the C++ lib expects them
         args = (
             raster_settings.bg, 
