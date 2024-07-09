@@ -26,8 +26,6 @@ def rasterize_gaussians(
     cov3Ds_precomp,
     raster_settings,
 ):
-    print("rasterize_gaussians")
-    print(language_feature_precomp)
     return _RasterizeGaussians.apply(
         means3D,
         means2D,
