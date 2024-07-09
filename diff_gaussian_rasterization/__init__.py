@@ -95,7 +95,8 @@ class _RasterizeGaussians(torch.autograd.Function):
         num_rendered = ctx.num_rendered
         raster_settings = ctx.raster_settings
         colors_precomp, language_feature_precomp,  means3D, scales, rotations, cov3Ds_precomp, radii, sh, geomBuffer, binningBuffer, imgBuffer = ctx.saved_tensors
-
+        print("Backward")
+        print(language_feature_precomp)
         # Restructure args as C++ method expects them
         args = (raster_settings.bg,
                 means3D, 
