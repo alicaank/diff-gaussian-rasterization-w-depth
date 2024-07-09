@@ -205,7 +205,7 @@ int CudaRasterizer::Rasterizer::forward(
 	const float* means3D,
 	const float* shs,
 	const float* colors_precomp,
-	const float* language_feature_precomp,
+	const float* language_feature_precomp, //new
 	const float* opacities,
 	const float* scales,
 	const float scale_modifier,
@@ -220,7 +220,6 @@ int CudaRasterizer::Rasterizer::forward(
 	float* out_language_feature,
 	float* out_depth,
 	int* radii,
-	bool debug,
 	bool include_feature)
 {
 	const float focal_y = height / (2.0f * tan_fovy);
@@ -339,9 +338,9 @@ int CudaRasterizer::Rasterizer::forward(
 		imgState.n_contrib,
 		background,
 		out_color,
+		out_language_feature,
 		geomState.depths,
 		out_depth,
-		out_language_feature,
 		include_feature);
 
 	return num_rendered;
@@ -381,7 +380,6 @@ void CudaRasterizer::Rasterizer::backward(
 	float* dL_dsh,
 	float* dL_dscale,
 	float* dL_drot,
-	bool debug,
 	bool include_feature)
 {
 	GeometryState geomState = GeometryState::fromChunk(geom_buffer, P);

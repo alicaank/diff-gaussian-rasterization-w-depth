@@ -53,7 +53,6 @@ namespace CudaRasterizer
 			float* out_language_feature,
 			float* out_depth,
 			int* radii = nullptr,
-			bool debug = false,
 			bool include_feature = false);
 
 		static void backward(
@@ -88,7 +87,6 @@ namespace CudaRasterizer
 			float* dL_dsh,
 			float* dL_dscale,
 			float* dL_drot,
-			bool debug,
 			bool include_feature);
 	};
 };

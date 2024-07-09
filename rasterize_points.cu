@@ -37,7 +37,7 @@ RasterizeGaussiansCUDA(
 	const torch::Tensor& background,
 	const torch::Tensor& means3D,
     const torch::Tensor& colors,
-	const torch::Tensor& language_feature, 
+	const torch::Tensor& language_feature, // new
     const torch::Tensor& opacity,
 	const torch::Tensor& scales,
 	const torch::Tensor& rotations,
@@ -53,7 +53,6 @@ RasterizeGaussiansCUDA(
 	const int degree,
 	const torch::Tensor& campos,
 	const bool prefiltered,
-	const bool debug,
 	const bool include_feature)
 {
   if (means3D.ndimension() != 2 || means3D.size(1) != 3) {
@@ -122,7 +121,6 @@ RasterizeGaussiansCUDA(
 		out_language_feature.contiguous().data<float>(),
 		out_depth.contiguous().data<float>(),
 		radii.contiguous().data<int>(),
-		debug,
 		include_feature);
   }
   return std::make_tuple(rendered, out_color, out_language_feature, radii, geomBuffer, binningBuffer, imgBuffer, out_depth);
@@ -152,7 +150,6 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 	const int R,
 	const torch::Tensor& binningBuffer,
 	const torch::Tensor& imageBuffer,
-	const bool debug,
 	const bool include_feature) 
 {
   const int P = means3D.size(0);
@@ -216,7 +213,6 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 	  dL_dsh.contiguous().data<float>(),
 	  dL_dscales.contiguous().data<float>(),
 	  dL_drotations.contiguous().data<float>(),
-	  debug,
 	  include_feature);
   }
 

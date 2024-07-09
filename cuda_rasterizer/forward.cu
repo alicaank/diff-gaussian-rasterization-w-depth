@@ -272,9 +272,9 @@ renderCUDA(
 	uint32_t* __restrict__ n_contrib,
 	const float* __restrict__ bg_color,
 	float* __restrict__ out_color,
+	float* __restrict__ out_language_feature,
 	const float* __restrict__ depth,
 	float* __restrict__ out_depth,
-	float* __restrict__ out_language_feature,
 	bool include_feature)
 {
 	// Identify current tile and associated min/max pixel range.
@@ -419,9 +419,9 @@ void FORWARD::render(
 	uint32_t* n_contrib,
 	const float* bg_color,
 	float* out_color,
+	float* out_language_feature,
 	const float* depth,
 	float* out_depth,
-	float* out_language_feature,
 	bool include_feature)
 {
 	renderCUDA<NUM_CHANNELS, NUM_CHANNELS_language_feature> << <grid, block >> > (
@@ -436,9 +436,9 @@ void FORWARD::render(
 		n_contrib,
 		bg_color,
 		out_color,
+		out_language_feature,
 		depth,
 		out_depth,
-		out_language_feature,
 		include_feature);
 }
 
