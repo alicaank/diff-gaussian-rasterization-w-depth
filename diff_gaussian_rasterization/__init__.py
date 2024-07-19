@@ -123,6 +123,8 @@ class _RasterizeGaussians(torch.autograd.Function):
                 binningBuffer,
                 imgBuffer,
                 raster_settings.include_feature)
+        
+        print("Settings: ", raster_settings.include_feature)
         # Compute gradients for relevant tensors by invoking backward method
         cpu_args = cpu_deep_copy_tuple(args) # Copy them before they can be corrupted
         try:
