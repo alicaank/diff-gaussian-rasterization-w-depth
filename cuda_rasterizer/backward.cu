@@ -556,7 +556,7 @@ renderCUDA(
 					// Update the gradients w.r.t. color of the Gaussian. 
 					// Atomic, since this pixel is just one of potentially
 					// many that were affected by this Gaussian.
-					atomicAdd(&(dL_dlanguage_feature[global_id * F + ch]), dchannel_dcolor * dL_dchannel_F);
+					atomicAdd(&(dL_dlanguage_feature[global_id * C + ch]), dchannel_dcolor * dL_dchannel_F);
 				}
 			}
 			dL_dalpha *= T;
