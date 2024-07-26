@@ -208,12 +208,12 @@ __global__ void preprocessCUDA(int P, int D, int M,
 	}
 	else
 	{
-		computeCov3D(scales[idx], scale_modifier, rotations[idx], cov3Ds + idx * 6);
+		computeCov3D(scales[idx], scale_modifier, rotations[idx], cov3Ds + idx * 6);   //Eq. (6)
 		cov3D = cov3Ds + idx * 6;
 	}
 
 	// Compute 2D screen-space covariance matrix
-	float3 cov = computeCov2D(p_orig, focal_x, focal_y, tan_fovx, tan_fovy, cov3D, viewmatrix);
+	float3 cov = computeCov2D(p_orig, focal_x, focal_y, tan_fovx, tan_fovy, cov3D, viewmatrix);  // Eq. (5)
 
 	// Invert covariance (EWA algorithm)
 	float det = (cov.x * cov.z - cov.y * cov.y);
@@ -258,7 +258,7 @@ __global__ void preprocessCUDA(int P, int D, int M,
 // Main rasterization method. Collaboratively works on one tile per
 // block, each thread treats one pixel. Alternates between fetching 
 // and rasterizing data.
-template <uint32_t CHANNELS, uint32_t CHANNELS_language_feature>
+template <uint32_t CHANNELS>
 __global__ void __launch_bounds__(BLOCK_X * BLOCK_Y)
 renderCUDA(
 	const uint2* __restrict__ ranges,
@@ -307,7 +307,7 @@ renderCUDA(
 	uint32_t contributor = 0;
 	uint32_t last_contributor = 0;
 	float C[CHANNELS] = { 0 };
-	float F[CHANNELS_language_feature] = { 0 };
+	float F[CHANNELS] = { 0 };
 // 	float D = 0.0f;  // Mean Depth
     float D = 15.0f;  // Median Depth. TODO: This is a hack setting max_depth to 15
 
@@ -362,12 +362,16 @@ renderCUDA(
 
 			// Eq. (3) from 3D Gaussian splatting paper.
 			for (int ch = 0; ch < CHANNELS; ch++)
+			{
 				C[ch] += features[collected_id[j] * CHANNELS + ch] * alpha * T;
-			
+			}
+
 			if (include_feature)
 			{
-				for (int ch = 0; ch < CHANNELS_language_feature; ch++)
-					F[ch] += language_feature[collected_id[j] * CHANNELS_language_feature + ch] * alpha * T;
+				for (int ch = 0; ch < CHANNELS; ch++)
+				{
+					F[ch] += language_feature[collected_id[j] * CHANNELS + ch] * alpha * T;
+				}
 			}
             // Mean depth:
 //             float dep = collected_depth[j];
@@ -396,12 +400,16 @@ renderCUDA(
 		final_T[pix_id] = T;
 		n_contrib[pix_id] = last_contributor;
 		for (int ch = 0; ch < CHANNELS; ch++)
+		{
 			out_color[ch * H * W + pix_id] = C[ch] + T * bg_color[ch];
+		}
 		out_depth[pix_id] = D;
 		if (include_feature) 
 		{
-			for (int ch = 0; ch < CHANNELS_language_feature; ch++)
+			for (int ch = 0; ch < CHANNELS; ch++)
+			{
 				out_language_feature[ch * H * W + pix_id] = F[ch]; //bg_color ???
+			}
 		}
 	}
 }
@@ -424,7 +432,7 @@ void FORWARD::render(
 	float* out_depth,
 	bool include_feature)
 {
-	renderCUDA<NUM_CHANNELS, NUM_CHANNELS_language_feature> << <grid, block >> > (
+	renderCUDA<NUM_CHANNELS> << <grid, block >> > (
 		ranges,
 		point_list,
 		W, H,

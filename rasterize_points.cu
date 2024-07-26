@@ -69,7 +69,7 @@ RasterizeGaussiansCUDA(
   torch::Tensor out_color = torch::full({NUM_CHANNELS, H, W}, 0.0, float_opts);
   torch::Tensor out_language_feature;
   if (include_feature) {
-	out_language_feature = torch::full({NUM_CHANNELS_language_feature, H, W}, 0.0, float_opts);
+	out_language_feature = torch::full({NUM_CHANNELS, H, W}, 0.0, float_opts);
   }
   else {
 	out_language_feature = torch::full({1}, 0.0, float_opts);
@@ -168,12 +168,11 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 
   torch::Tensor dL_dlanguage_feature;
   if (include_feature) {
-	dL_dlanguage_feature = torch::zeros({P, NUM_CHANNELS_language_feature}, means3D.options());
+	dL_dlanguage_feature = torch::zeros({P, NUM_CHANNELS}, means3D.options());
 	// dL_dlanguage_feature = torch::zeros({1}, means3D.options());
   } else {
 	dL_dlanguage_feature = torch::zeros({1}, means3D.options());
   }
-  
   torch::Tensor dL_dconic = torch::zeros({P, 2, 2}, means3D.options());
   torch::Tensor dL_dopacity = torch::zeros({P, 1}, means3D.options());
   torch::Tensor dL_dcov3D = torch::zeros({P, 6}, means3D.options());
@@ -220,7 +219,6 @@ std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Te
 
   return std::make_tuple(dL_dmeans2D, dL_dcolors, dL_dlanguage_feature, dL_dopacity, dL_dmeans3D, dL_dcov3D, dL_dsh, dL_dscales, dL_drotations);
 }
-
 
 torch::Tensor markVisible(
 		torch::Tensor& means3D,

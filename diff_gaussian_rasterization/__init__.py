@@ -54,6 +54,7 @@ class _RasterizeGaussians(torch.autograd.Function):
         cov3Ds_precomp,
         raster_settings,
     ):
+
         # Restructure arguments the way that the C++ lib expects them
         args = (
             raster_settings.bg, 
@@ -120,13 +121,9 @@ class _RasterizeGaussians(torch.autograd.Function):
                 binningBuffer,
                 imgBuffer,
                 raster_settings.include_feature)
-        
-        # Compute gradients for relevant tensors by invoking backward method
-       
-        grad_means2D, grad_colors_precomp, grad_language_feature_precomp, grad_opacities, grad_means3D, grad_cov3Ds_precomp, grad_sh, grad_scales, grad_rotations = _C.rasterize_gaussians_backward(*args)
-       
 
-        # grad_means2D, grad_colors_precomp, grad_language_feature_precomp, grad_opacities, grad_means3D, grad_cov3Ds_precomp, grad_sh, grad_scales, grad_rotations = _C.rasterize_gaussians_backward(*args)
+        # Compute gradients for relevant tensors by invoking backward method
+        grad_means2D, grad_colors_precomp, grad_language_feature_precomp, grad_opacities, grad_means3D, grad_cov3Ds_precomp, grad_sh, grad_scales, grad_rotations = _C.rasterize_gaussians_backward(*args)
 
         grads = (
             grad_means3D,
@@ -154,7 +151,7 @@ class GaussianRasterizationSettings(NamedTuple):
     projmatrix : torch.Tensor
     sh_degree : int
     campos : torch.Tensor
-    prefiltered : bool 
+    prefiltered : bool
     include_feature: bool
 
 class GaussianRasterizer(nn.Module):
@@ -189,7 +186,7 @@ class GaussianRasterizer(nn.Module):
             colors_precomp = torch.Tensor([])
         if language_feature_precomp is None:
             language_feature_precomp = torch.Tensor([])
-            
+
         if scales is None:
             scales = torch.Tensor([])
         if rotations is None:
