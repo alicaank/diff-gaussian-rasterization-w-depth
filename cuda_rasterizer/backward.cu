@@ -396,7 +396,7 @@ __global__ void preprocessCUDA(
 }
 
 // Backward version of the rendering procedure.
-template <uint32_t C, uint32_t F>
+template <uint32_t C>
 __global__ void __launch_bounds__(BLOCK_X * BLOCK_Y)
 renderCUDA(
 	const uint2* __restrict__ ranges,
@@ -439,7 +439,7 @@ renderCUDA(
 	__shared__ float2 collected_xy[BLOCK_SIZE];
 	__shared__ float4 collected_conic_opacity[BLOCK_SIZE];
 	__shared__ float collected_colors[C * BLOCK_SIZE];
-	__shared__ float collected_feature[F * BLOCK_SIZE];
+	__shared__ float collected_feature[C * BLOCK_SIZE];
 
 	// In the forward, we stored the final value for T, the
 	// product of all (1 - alpha) factors. 
@@ -460,13 +460,13 @@ renderCUDA(
 	float last_alpha = 0;
 	float last_color[C] = { 0 };
 
-	float accum_rec_F[F] = {0};
-	float dL_dpixel_F[F] = {0};
-	float last_language_feature[F] = {0};
+	float accum_rec_F[C] = {0};
+	float dL_dpixel_F[C] = {0};
+	float last_language_feature[C] = {0};
 
 	if (include_feature) {
 		if (inside)
-			for (int i = 0; i < F; i++)
+			for (int i = 0; i < C; i++)
 				dL_dpixel_F[i] = dL_dpixels_F[i * H * W + pix_id];
 	}
 
@@ -492,9 +492,9 @@ renderCUDA(
 			{
 				collected_colors[i * BLOCK_SIZE + block.thread_rank()] = colors[coll_id * C + i];
 			}
-			for (int i = 0; i < F; i++)
+			for (int i = 0; i < C; i++)
 			{
-				collected_feature[i * BLOCK_SIZE + block.thread_rank()] = language_feature[coll_id * F + i];
+				collected_feature[i * BLOCK_SIZE + block.thread_rank()] = language_feature[coll_id * C + i];
 			}
 		}
 		block.sync();
@@ -544,7 +544,7 @@ renderCUDA(
 				atomicAdd(&(dL_dcolors[global_id * C + ch]), dchannel_dcolor * dL_dchannel);
 			}
 			if (include_feature) {
-				for (int ch = 0; ch < F; ch++)
+				for (int ch = 0; ch < C; ch++)
 				{
 					const float f = collected_feature[ch * BLOCK_SIZE + j];
 					// Update last color (to be used in the next iteration)
