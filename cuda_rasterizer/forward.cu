@@ -366,15 +366,6 @@ renderCUDA(
 				C[ch] += features[collected_id[j] * CHANNELS + ch] * alpha * T;
 			}
 
-			if (T > 0.5f && test_T < 0.5)
-			{
-			    float dep = collected_depth[j];
-				D = dep;
-			}
-
-			T = test_T;
-			last_contributor = contributor;
-
 			if (include_feature)
 			{
 				for (int ch = 0; ch < CHANNELS; ch++)
@@ -387,6 +378,15 @@ renderCUDA(
 //             D += dep * alpha * T;
 
             // Median depth:
+
+			if (T > 0.5f && test_T < 0.5)
+			{
+			    float dep = collected_depth[j];
+				D = dep;
+			}
+
+			T = test_T;
+			last_contributor = contributor;
 
 
 			// Keep track of last range entry to update this
